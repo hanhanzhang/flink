@@ -60,6 +60,12 @@ import static org.apache.flink.core.memory.MemorySegmentFactory.allocateOffHeapU
 public class MemoryManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(MemoryManager.class);
+
+    /*
+     * 1. 每个Slot分配一个独占的MemoryManager, 多用于RocksDB的内存管理
+     *
+     * */
+
     /** The default memory page size. Currently set to 32 KiBytes. */
     public static final int DEFAULT_PAGE_SIZE = 32 * 1024;
 
@@ -80,6 +86,7 @@ public class MemoryManager {
 
     private final UnsafeMemoryBudget memoryBudget;
 
+    // 共享的内存, 这部分内存为多个RocksDB实例中共享, 主要为Cache及Write Buffer内存占用.
     private final SharedResources sharedResources;
 
     /** Flag whether the close() has already been invoked. */
