@@ -42,6 +42,12 @@ public class SharedStateRegistry implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(SharedStateRegistry.class);
 
+    /*
+     * 1. RocksDB StateBackend支持增量快照, 每个算子制作快照时, 对已上传过的文件以'PlaceholderStreamStateHandle'汇报给JM
+     *
+     * 2. SharedStateRegistry对在多个快照间共享的文件通过引用计数方式来担保文件可删除
+     * */
+
     /** A singleton object for the default implementation of a {@link SharedStateRegistryFactory} */
     public static final SharedStateRegistryFactory DEFAULT_FACTORY = SharedStateRegistry::new;
 
@@ -94,6 +100,12 @@ public class SharedStateRegistry implements AutoCloseable {
                     open, "Attempt to register state to closed SharedStateRegistry.");
 
             entry = registeredStates.get(registrationKey);
+
+            /*
+             * 1. 若 entry 空, 则共享文件是第一次上传且定不是'PlaceholderStreamStateHandle'
+             *
+             * 2. 若 entry 非空, 则增加一次共享文件计数
+             * */
 
             if (entry == null) {
 
