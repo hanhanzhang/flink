@@ -67,6 +67,15 @@ public class JobGraph implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    /*
+     * 1. JobEdge描述DAG中两个顶点链接关系, JobEdge源端指向顶点的对这条边的结果输出(IntermediateDataSet), 也就是说
+     *    每条边JobEdge都对应唯一的一个结果输出IntermediateDataSet
+     *
+     * 2. JobEdge除了描述顶点的链接关系外, 还描述上下游顶点的数据分发逻辑(DistributionPattern), 数据的分发逻辑包含在
+     *    UC快照模式下数据恢复策略
+     *
+     * */
+
     // --- job and configuration ---
 
     /** List of task vertices included in this job graph. */
