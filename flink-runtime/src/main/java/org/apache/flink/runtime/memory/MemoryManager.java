@@ -64,6 +64,8 @@ public class MemoryManager {
     /*
      * 1. 每个Slot分配一个独占的MemoryManager, 多用于RocksDB的内存管理
      *
+     * 2. SharedResources管理的共享内存为RocksDB实例持有, 需保证线程安全, 这是因为Slot可运行不同JobVertex的实例, 而这些实例
+     *    被不同的线程执行, 故RocksDB实例共享内存分配时需保证只能分配一次
      * */
 
     /** The default memory page size. Currently set to 32 KiBytes. */
